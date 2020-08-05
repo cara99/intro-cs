@@ -1,0 +1,82 @@
+package lab9;
+import lab9.providers.*;
+import lab9.implementations.*;
+import lab9.viz.*;
+import sedgewick.StdDraw;
+
+
+public class StdDrawView 
+{
+
+	
+	/**
+	 * draws se circle
+	 * @param history
+	 */
+	public void drawCircle(History history)
+	{
+	StdDraw.setXscale(-1.0,1.0);
+	StdDraw.setYscale(-1.0,1.0);
+	Guess a = history.getHistoryAt(history.size()-1);
+	for(int i=0; i<4;i++)
+	{
+		
+	StdDraw.setPenColor(c.getColorForPeg(a.getChoice(i)));
+	StdDraw.filledCircle(i*0.2, 0.8, radius);
+	}
+	
+	}
+	
+	private double radius = 1.0/6;
+	GameProperties gamepro;
+	ProvidesGuess guess;
+	ProvidesColor c;
+	History history;
+	/**
+	 * stddrawview primary constructor
+	 * @param a
+	 * @param b
+	 * @param c
+	 * @param history
+	 */
+	public StdDrawView(GameProperties a, ProvidesGuess b, ProvidesColor c, History history) {
+		this.gamepro = a;
+		this.guess = b;
+		this.c = c;
+		this.history = history;
+	}
+	
+	
+	/**
+	 * gets dis
+	 * @return
+	 */
+	public GameProperties getGamePro() {
+		return gamepro;
+	}
+	/**
+	 * gets dis
+	 * @return
+	 */
+	public ProvidesGuess getGuess() {
+		return guess;
+	}
+	
+	/**
+	 * gets dis c
+	 * @return
+	 */
+	public ProvidesColor getC() {
+		return c;
+	}
+	
+	/**
+	 * gets history
+	 * @return
+	 */
+	public History getHistory() {
+		return history;
+	}
+	
+	
+}
