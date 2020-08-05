@@ -1,0 +1,256 @@
+package lab8;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import blts.Array;
+import sedgewick.StdDraw;
+
+/**
+ * An immutable Polynomial class.  This means that once
+ *   the constructor has finished, nothing about this
+ *   Polynomial can change.  We check for this in
+ *   our testing of your implementation.
+ *   
+ * Also this implementation is sparse, in the sense
+ * that terms with 0 coefficients, supplied or implied,
+ * can and should not be represented here.
+ * 
+ * For example, 5 + x^100 is a Polynomial with a 0-degree
+ * term (5) and a 100-degree term (1).   The 99 terms in between are
+ * not mentioned here and are implied to have a coefficient of 0.
+ * Moreover, x^202 power would also have a coefficient of 0 for this
+ * Polynomial.   By using a sparse representation, we retain only
+ * the 0-degree and 100-degree terms in this case.
+ * 
+ * @author Cara Jefferson
+ *
+ */
+public class SparsePolynomial implements Polynomial {
+
+	private final Set<Term> a;
+	/**
+	 * Primary constructor
+	 * @param array  collection of Terms for this Polynomial.  
+	 * Some coefficients may be 0.0, but those Terms should not
+	 * be retained in the Set.
+	 */
+	public SparsePolynomial(Term[] array) {
+		this.a = new HashSet<Term>();
+
+		for(int i=0; i<array.length;i++)
+		{
+			if(array[i].getCoefficient()!=0.0) {
+				this.a.add(array[i]);
+			}
+		}
+
+	}
+
+	/**
+	 * This is completed already for you.  Do not change this constructor.
+	 * Convenience constructor to create an empty Polynomial.
+	 * Calls the primary constructor passing an empty array of Terms.
+	 */
+	public SparsePolynomial() {
+		this(new Term[0]);
+	}
+
+
+	/**
+	 * This is provided for you.   
+	 * Really, no need to thank me.
+	 */
+
+
+	@Override
+	/**
+	 * plots
+	 */
+	public void plot(double lowx, double highx, double incx) {
+		//
+		// Determine min and max for y values
+		//
+		double maxy = this.evaluate(lowx);
+		double miny = this.evaluate(lowx);
+		for (double x=lowx; x < highx; x = x + incx) {
+			double y = this.evaluate(x);
+			maxy = Math.max(maxy, y);
+			miny = Math.min(miny, y);
+		}
+		StdDraw.setXscale(lowx, highx);
+		StdDraw.setYscale(miny, maxy);
+		for (double x=lowx; x < highx; x = x + incx) {
+			double y = this.evaluate(x);
+			StdDraw.point(x, y);
+		}
+	}
+
+	@Override
+	/**
+	 * returns a string representation of the polynomial
+	 */
+	public String toString() {
+		return "SparsePolynomial [a=" + a + "]";
+	}
+
+	/**
+	 * hashcode
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((a == null) ? 0 : a.hashCode());
+		return result;
+	}
+
+	/**
+	 * determines whether or not two polynomials are equal to eachother
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		SparsePolynomial other = (SparsePolynomial) obj;
+		if (a == null) {
+			if (other.a != null)
+				return false;
+		} else if (!a.equals(other.a))
+			return false;
+		return true;
+	}
+
+	/**
+	 * returns the degree of the term in a polynomial that has the highest degree
+	 * this determines the degree of the polynomial itself
+	 */
+	@Override
+	public int degree() {
+		int max=0;
+		for (Term t:a)
+		{
+			if(t.getDegree()>max)
+			{
+				max=t.getDegree();
+			}
+		}
+		return max;
+	}
+
+	/**
+	 * returns the coefficient at a specified degree/array index
+	 */
+	@Override
+	public double getCoefficientAtDegree(int degree) {
+		// TODO Auto-generated method stub
+		return evaluate(degree);
+	}
+
+	@Override
+	/**
+	 * evaluates the whole polynomial at a given value x and returns the double eval
+	 */
+	public double evaluate(double x) {
+		double eval=0;
+		for(Term t:a)
+		{
+			eval = eval + t.evaluateTermAtX(x);
+		}
+		return eval;
+	}
+
+	@Override
+	/**
+	 * toArray() generates the every-term dense representation as an array
+	 * using the sparse representation in a set
+	 */
+
+	public Term[] toArray() {
+		Term[] array= new Term[degree()+1];
+		for(Term t:a)
+		{
+			array[t.getDegree()]=t;
+		}
+		for(int i=0; i<array.length;i++)
+		{
+			if(array[i]==null) {
+				array[i] = new Term(0.0,i);	
+			}
+		}	
+		return array;
+	}
+
+	/**
+	 * returns the derivative of the polynomial
+	 */
+	@Override
+	public Polynomial derivative() {
+		Term[] another = this.toArray();
+		Term[] derivative = new Term[another.length];
+		for(Term t:this.toArray())
+		{
+			derivative[t.getDegree()]= new Term(t.getCoefficient()*t.getDegree(),t.getDegree()-1);	
+		}
+
+		return new SparsePolynomial(derivative);
+	}
+
+	/**
+	 * returns the sum of two polynomials as a resultant polynomial
+	 */
+	@Override
+	public Polynomial sum(Polynomial other) {
+		// TODO Auto-generated method stub
+		//three arrays
+		Term[] arr = this.toArray();
+		Term[] arr2 = other.toArray();
+		Term[] arr3 = new Term[Math.max(arr.length, arr2.length)];
+		int min = Math.min(arr.length, arr2.length);
+
+		for(int i=0; i<min;i++)
+		{
+			arr3[i] = new Term(arr[i].getCoefficient()+arr2[i].getCoefficient(), arr[i].getDegree());
+		}
+		for(int i=min;i<arr3.length;i++) {
+			if(arr.length>arr2.length)
+			{
+				arr3[i]=arr[i];
+			}
+			else 
+			{
+				arr3[i]=arr2[i];
+			}
+		}
+		return new SparsePolynomial(arr3);
+	}
+
+	/**
+	 * adds one term to a polynomial
+	 */
+	@Override
+	public Polynomial addTerm(Term t) {
+		Term[] added = this.toArray();
+		Term[] d = new Term[added.length+1];
+		for(int i=0;i<added.length;i++)
+		{
+			if(added[i].equals(t))
+			{
+				added = d;
+			}
+			else
+			{
+				d[added.length]=t;
+			}
+		}
+		
+		return new SparsePolynomial();
+	}
+
+
+
+}
