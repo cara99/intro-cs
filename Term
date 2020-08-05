@@ -1,0 +1,100 @@
+package lab8;
+
+/**
+ * Represent an as-yet unevaluated term of a polynomial.
+ * A term has-a
+ *      coefficient, which is a double
+ *      degree, which is an int
+ *      
+ * Examples:
+ * Given the term  3.27 x squared
+ *   its coefficient is 3.27
+ *   its degree      is 2
+ *   
+ * Given the term 131
+ *    its coefficient is 131.0
+ *    its degree      is 0
+ * 
+ * @author Cara Jefferson
+ *
+ */
+
+public class Term {
+	private final double coefficient;
+	private final int degree;
+	public Term(double coefficient, int degree) {
+		super();
+		this.coefficient = coefficient;
+		this.degree = degree;
+	}
+
+	
+	@Override
+	/**
+	 * hashcode
+	 */
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		long temp;
+		temp = Double.doubleToLongBits(coefficient);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		result = prime * result + degree;
+		return result;
+	}
+
+	@Override
+	/**
+	 * determines whether one object equals another object
+	 */
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Term other = (Term) obj;
+		if (Double.doubleToLongBits(coefficient) != Double.doubleToLongBits(other.coefficient))
+			return false;
+		if (degree != other.degree)
+			return false;
+		return true;
+	}
+
+	/**
+	 * returns coefficient of the term in question
+	 * @return
+	 */
+	public double getCoefficient() {
+		return coefficient;
+	}
+
+	@Override
+	/**
+	 * retrns a string resentation of the term object
+	 */
+	public String toString() {
+		return "Term [coefficient=" + coefficient + ", degree=" + degree + "x^]";
+	}
+
+	/**
+	 * returns the degree of the term
+	 * @return
+	 */
+	public int getDegree() {
+		return degree;
+	}
+
+	/**
+	 * takes in an x and returns and evaluation of the term for x
+	 * @param x
+	 * @return
+	 */
+	public double evaluateTermAtX(double x) 
+	{
+		return getCoefficient()*Math.pow(x, getDegree());
+	}
+	
+
+}
